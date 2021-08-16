@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: gateWay
+  http:
+    multipart:
+      enabled: false
+
+hystrix:
+  command:
+    tweet-service:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 60000
+
+ribbon:
+  ReadTimeout: 60000
+  ConnectTimeout: 60000
+
+server:
+  port: 8080
+
+zuul:
+  routes:
+    admin-panel:
+      path: /admin/**
+      url: http://localhost:8081/
+      sensitiveHeaders: Cookie,Set-Cookie
+      stripPrefix: false
+    vendor-panel:
+      path: /vendor/**
+      url: http://localhost:8082/
+      sensitiveHeaders: Cookie,Set-Cookie
+      stripPrefix: false
+  prefix: /api
+  ignoredHeaders: Access-Control-Allow-Credentials, Access-Control-Allow-Origin
+  host:
+    socket-timeout-millis: 60000
+
+const:
+  security.jwt.secret: '{/<odin>!/3#FuP964>hHdG;QtS!>S}'
