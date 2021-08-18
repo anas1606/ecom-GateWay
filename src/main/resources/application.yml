@@ -27,9 +27,14 @@ zuul:
       url: http://localhost:8081/
       sensitiveHeaders: Cookie,Set-Cookie
       stripPrefix: false
+    authentication:
+      path: /auth/**
+      url: http://localhost:8082/
+      sensitiveHeaders: Cookie,Set-Cookie
+      stripPrefix: false
     vendor-panel:
       path: /vendor/**
-      url: http://localhost:8082/
+      url: http://localhost:8083/
       sensitiveHeaders: Cookie,Set-Cookie
       stripPrefix: false
   prefix: /api
