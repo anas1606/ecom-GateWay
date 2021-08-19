@@ -32,7 +32,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .antMatchers(
                         "/api/admin/**",
-                        "/api/auth/**"
+                        "/api/customer/**",
+                        "/api/vendor/**"
                 ).permitAll()
                 .anyRequest().authenticated().and().exceptionHandling().accessDeniedHandler(accessDeniedHandler()).authenticationEntryPoint(authenticationEntryPoint());
     }

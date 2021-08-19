@@ -27,8 +27,8 @@ zuul:
       url: http://localhost:8081/
       sensitiveHeaders: Cookie,Set-Cookie
       stripPrefix: false
-    authentication:
-      path: /auth/**
+    customer:
+      path: /customer/**
       url: http://localhost:8082/
       sensitiveHeaders: Cookie,Set-Cookie
       stripPrefix: false
