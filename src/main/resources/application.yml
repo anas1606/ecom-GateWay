@@ -1,6 +1,19 @@
 spring:
   application:
     name: gateWay
+  datasource:
+    url: jdbc:mysql://localhost:3306/e-com
+    username: root
+    password:
+    driverClassName: com.mysql.jdbc.Driver
+  jpa:
+    show-sql: false
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+      dialect: org.hibernate.dialect.SQLServer2012Dialect
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
   http:
     multipart:
       enabled: false
