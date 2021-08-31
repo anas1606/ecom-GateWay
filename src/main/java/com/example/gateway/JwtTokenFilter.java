@@ -35,44 +35,47 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse rsp, FilterChain filterChain) throws ServletException, IOException {
-        final String requestTokenHeader = req.getHeader(AUTHORIZATION);
-        String username = null;
-        String jwtToken = null;
-
-        if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
-            jwtToken = requestTokenHeader.substring(7);
-            try {
-                username = jwtTokenUtil.getUsernameFromToken(jwtToken);
-            } catch (IllegalArgumentException e) {
-                log.info("Unable to get JWT Token");
-            } catch (ExpiredJwtException e) {
-                log.info("JWT Token has expired");
+        if (req.getRequestURI().startsWith("/api/customer/")) {
+            final String requestTokenHeader = req.getHeader(AUTHORIZATION);
+            String username = null;
+            String jwtToken = null;
+            if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
+                jwtToken = requestTokenHeader.substring(7);
+                try {
+                    username = jwtTokenUtil.getUsernameFromToken(jwtToken);
+                } catch (IllegalArgumentException e) {
+                    log.info("Unable to get JWT Token");
+                } catch (ExpiredJwtException e) {
+                    log.info("JWT Token has expired");
+                }
+            } else {
+                log.warn("JWT Token does not begin with Bearer String");
             }
-        } else {
-            log.warn("JWT Token does not begin with Bearer String");
-        }
 
-        // Once we get the token validate it.
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            // Once we get the token validate it.
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            UserDetails userDetails = this.jwtUserDetailsService.loadUserByUsername(username);
+                UserDetails userDetails = this.jwtUserDetailsService.loadUserByUsername(username);
 
-            //Firstly check If user Loging at another system then this token is Expired
-            if (customerRepository.countBySessionTokenAndStatus(jwtToken) == 0)
-                log.info("JWT Token has expired Bcoz Login At Another System Or you are Deactivated");
-            else {
-                // if token is valid configure Spring Security to manually set
-                // authentication
-                boolean isValidToken = jwtTokenUtil.validateToken(jwtToken, userDetails);
-                if (isValidToken) {
+                //Firstly check If user Loging at another system then this token is Expired
+                if (customerRepository.countBySessionTokenAndStatus(jwtToken) == 0)
+                    log.info("JWT Token has expired Bcoz Login At Another System Or you are Deactivated");
+                else {
+                    // if token is valid configure Spring Security to manually set
+                    // authentication
+                    boolean isValidToken = jwtTokenUtil.validateToken(jwtToken, userDetails);
+                    if (isValidToken) {
 
-                    UsernamePasswordAuthenticationToken authentication = jwtTokenUtil.getAuthenticationToken(jwtToken, SecurityContextHolder.getContext().getAuthentication(), userDetails);
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
-                    logger.info("authenticated user " + username + ", setting security context");
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                        UsernamePasswordAuthenticationToken authentication = jwtTokenUtil.getAuthenticationToken(jwtToken, SecurityContextHolder.getContext().getAuthentication(), userDetails);
+                        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
+                        logger.info("authenticated user " + username + ", setting security context");
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                    }
                 }
             }
+            filterChain.doFilter(req, rsp);
+        }else{
+            filterChain.doFilter(req, rsp);
         }
-        filterChain.doFilter(req, rsp);
     }
 }

@@ -56,11 +56,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers(
-                        "/api/admin/**",
                         "/api/customer/login",
                         "/api/customer/register",
                         "/api/customer/verify",
-                        "/api/vendor/**"
+                        "/api/vendor/**",
+                        "/api/admin/**"
                 ).permitAll()
                 .anyRequest().authenticated().and()
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
